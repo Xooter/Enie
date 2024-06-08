@@ -21,6 +21,12 @@ private:
   int fd;
 
   void emit(int fd, int type, int code, int val);
+
+  void push(int code);
+  void release(int code);
+  void pushRelease(int code);
+  void refresh();
+
   void init();
 
   void create_device();

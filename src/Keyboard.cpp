@@ -17,31 +17,34 @@ void Keyboard::emit(int fd, int type, int code, int val) {
 }
 
 void Keyboard::enie() {
-  emit(fd, EV_KEY, KEY_BACKSPACE, 1);
-  emit(fd, EV_KEY, KEY_BACKSPACE, 0);
+  pushRelease(KEY_BACKSPACE);
 
-  emit(fd, EV_KEY, KEY_LEFTCTRL, 1);
-  emit(fd, EV_KEY, KEY_LEFTSHIFT, 1);
-  emit(fd, EV_KEY, KEY_U, 1);
-  emit(fd, EV_KEY, KEY_LEFTCTRL, 0);
-  emit(fd, EV_KEY, KEY_LEFTSHIFT, 0);
-  emit(fd, EV_KEY, KEY_U, 0);
+  push(KEY_LEFTCTRL);
+  push(KEY_LEFTSHIFT);
+  push(KEY_U);
+  release(KEY_LEFTCTRL);
+  release(KEY_LEFTSHIFT);
+  release(KEY_U);
 
-  emit(fd, EV_SYN, SYN_REPORT, 0);
+  pushRelease(KEY_0);
+  pushRelease(KEY_0);
+  pushRelease(KEY_F);
+  pushRelease(KEY_1);
+  pushRelease(KEY_ENTER);
 
-  emit(fd, EV_KEY, KEY_0, 1);
-  emit(fd, EV_KEY, KEY_0, 0);
-  emit(fd, EV_KEY, KEY_0, 1);
-  emit(fd, EV_KEY, KEY_0, 0);
-  emit(fd, EV_KEY, KEY_F, 1);
-  emit(fd, EV_KEY, KEY_F, 0);
-  emit(fd, EV_KEY, KEY_1, 1);
-  emit(fd, EV_KEY, KEY_1, 0);
-  emit(fd, EV_KEY, KEY_ENTER, 1);
-  emit(fd, EV_KEY, KEY_ENTER, 0);
-
-  emit(fd, EV_SYN, SYN_REPORT, 0);
+  refresh();
 }
+
+void Keyboard::push(int code) { emit(fd, EV_KEY, code, 1); }
+
+void Keyboard::release(int code) { emit(fd, EV_KEY, code, 0); }
+
+void Keyboard::pushRelease(int code) {
+  push(code);
+  release(code);
+}
+
+void Keyboard::refresh() { emit(fd, EV_SYN, SYN_REPORT, 0); }
 
 void Keyboard::init() {
   fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);

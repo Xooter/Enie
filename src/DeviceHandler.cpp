@@ -4,6 +4,7 @@ DeviceHandler::DeviceHandler(char *input_dev) {
   this->input_dev = input_dev;
   init();
 }
+
 DeviceHandler::~DeviceHandler() { close_device(); }
 
 void DeviceHandler::loop(void (*v)(int, int)) {
