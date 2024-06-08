@@ -41,7 +41,7 @@ run_binary() {
 # Mostrar menú
 echo "Choose compilation mode"
 PS3="-> "
-options=("Debug" "Release" "Salir")
+options=("Debug" "Release" "Quit")
 select opt in "${options[@]}"; do
 	case $opt in
 	"Debug")
