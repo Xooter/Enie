@@ -3,9 +3,6 @@
 Keyboard keyboard;
 
 void verify(int code, int value) {
-
-  printf("%i", code);
-
   if (code == KEY_SEMICOLON && value == 1) {
     keyboard.enie();
   }
