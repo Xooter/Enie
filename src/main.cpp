@@ -33,7 +33,6 @@ int main(int argc, char *argv[]) {
   // dev/input
   int timeout_ms = -1;
   char *input_dev = argv[1];
-  int st;
   int ret;
   struct pollfd fds[1];
 
@@ -62,7 +61,7 @@ int main(int argc, char *argv[]) {
   usetup.id.bustype = BUS_USB;
   usetup.id.vendor = 0x1234;
   usetup.id.product = 0x5678;
-  strcpy(usetup.name, "Example device");
+  strcpy(usetup.name, "Enie");
 
   ioctl(fd, UI_DEV_SETUP, &usetup);
   ioctl(fd, UI_DEV_CREATE);
@@ -96,7 +95,7 @@ int main(int argc, char *argv[]) {
           printf("error %d\n", (int)r);
           break;
         } else {
-          if (input_data->code == KEY_SEMICOLON) {
+          if (input_data->code == KEY_SEMICOLON && input_data->value == 1) {
 
             emit(fd, EV_KEY, KEY_BACKSPACE, 1);
             emit(fd, EV_KEY, KEY_BACKSPACE, 0);
