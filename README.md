@@ -1,17 +1,16 @@
 # 18 KB of pure ñ
 
-> Sexiest ñ macro ever
+## Macros?
 
-### Macros?
+yep, macros.
 
-> yep, macros.
+## Why?
 
-### Why?
+Because I'm tired of writing ñ
 
-> Because I'm tired of writing ñ
+### Write
 
-#### write
-
-nie = ñ
-nio = ñ
-nia = ñ
+nie = ñe
+nio = ño
+nia = ña
+;; = ñ
