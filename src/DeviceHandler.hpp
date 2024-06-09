@@ -25,6 +25,8 @@ private:
   void open_device();
   void verify(input_event *event);
 
+  void ClearLastKeys();
+
 public:
   DeviceHandler(char *input_dev);
   ~DeviceHandler();

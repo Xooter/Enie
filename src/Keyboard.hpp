@@ -14,6 +14,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <termios.h>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 

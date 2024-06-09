@@ -1,6 +1,4 @@
 #include "Keyboard.hpp"
-#include <iostream>
-#include <thread>
 
 Keyboard::Keyboard() { init(); }
 Keyboard::~Keyboard() { close_device(); }
@@ -45,7 +43,7 @@ bool Keyboard::transform(const vector<key> transformKeys, input_event *event,
 }
 
 void Keyboard::enie(const int rollback, const vector<int> *keys) {
-  for (int i = 0; i < keys->size(); i++) {
+  for (const auto &key : *keys) {
     pushRelease(KEY_BACKSPACE);
   }
 
@@ -64,8 +62,8 @@ void Keyboard::enie(const int rollback, const vector<int> *keys) {
 
   this_thread::sleep_for(chrono::milliseconds(100));
 
-  for (int i = 0; i < rollback; i++) {
-    pushRelease(keys->at(i));
+  for (const auto &key : *keys) {
+    pushRelease(key);
   }
 
   refresh();
@@ -77,9 +75,7 @@ void Keyboard::release(const int code) { emit(fd, EV_KEY, code, 0); }
 
 void Keyboard::pushRelease(const int code) {
   push(code);
-  refresh();
   release(code);
-  refresh();
 }
 
 void Keyboard::refresh() { emit(fd, EV_SYN, SYN_REPORT, 0); }

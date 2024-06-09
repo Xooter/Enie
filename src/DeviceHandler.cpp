@@ -1,6 +1,4 @@
 #include "DeviceHandler.hpp"
-#include <type_traits>
-#include <unistd.h>
 
 DeviceHandler::DeviceHandler(char *input_dev) {
   this->input_dev = input_dev;
@@ -30,14 +28,14 @@ void DeviceHandler::loop() {
 }
 
 // ["nie",";;"] => "<uni>00f1"
-
+//
 void DeviceHandler::verify(input_event *event) {
 
   if (event->value != 1 || event->type != EV_KEY)
     return;
 
   if (last_keys.size() > 9 || event->code == KEY_ENTER) {
-    last_keys = stack<input_event>();
+    ClearLastKeys();
   }
 
   if (event->code == KEY_BACKSPACE && !last_keys.empty()) {
@@ -48,7 +46,13 @@ void DeviceHandler::verify(input_event *event) {
 
   bool result = keyboard.transform(keys, event, last_keys);
   if (result) {
-    last_keys = stack<input_event>();
+    ClearLastKeys();
+  }
+}
+
+void DeviceHandler::ClearLastKeys() {
+  while (!last_keys.empty()) {
+    last_keys.pop();
   }
 }
 
