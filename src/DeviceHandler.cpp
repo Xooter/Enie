@@ -1,4 +1,6 @@
 #include "DeviceHandler.hpp"
+#include <type_traits>
+#include <unistd.h>
 
 DeviceHandler::DeviceHandler(char *input_dev) {
   this->input_dev = input_dev;
@@ -7,7 +9,7 @@ DeviceHandler::DeviceHandler(char *input_dev) {
 
 DeviceHandler::~DeviceHandler() { close_device(); }
 
-void DeviceHandler::loop(void (*v)(int, int)) {
+void DeviceHandler::loop() {
   while (true) {
     ret = poll(fds, 1, timeout_ms);
 
@@ -19,11 +21,34 @@ void DeviceHandler::loop(void (*v)(int, int)) {
           printf("error %d\n", (int)r);
           break;
         } else {
-          v(input_data->code, input_data->value);
+          verify(input_data);
           memset(input_data, 0, input_size);
         }
       }
     }
+  }
+}
+
+// ["nie",";;"] => "<uni>00f1"
+
+void DeviceHandler::verify(input_event *event) {
+
+  if (event->value != 1 || event->type != EV_KEY)
+    return;
+
+  if (last_keys.size() > 9 || event->code == KEY_ENTER) {
+    last_keys = stack<input_event>();
+  }
+
+  if (event->code == KEY_BACKSPACE && !last_keys.empty()) {
+    last_keys.pop();
+  } else {
+    last_keys.push(*event);
+  }
+
+  bool result = keyboard.transform(keys, event, last_keys);
+  if (result) {
+    last_keys = stack<input_event>();
   }
 }
 
@@ -46,4 +71,7 @@ void DeviceHandler::open_device() {
   }
 }
 
-void DeviceHandler::close_device() { close(fds[0].fd); }
+void DeviceHandler::close_device() {
+  keyboard.close_device();
+  close(fds[0].fd);
+}

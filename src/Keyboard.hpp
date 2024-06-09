@@ -6,6 +6,7 @@
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include <poll.h>
+#include <stack>
 #include <stdbool.h>
 #include <stdexcept>
 #include <stdio.h>
@@ -14,17 +15,25 @@
 #include <sys/time.h>
 #include <termios.h>
 #include <unistd.h>
+#include <vector>
+
+using namespace std;
+
+struct key {
+  vector<int> keys;
+  int rollback;
+};
 
 class Keyboard {
 private:
   struct uinput_setup usetup;
   int fd;
 
-  void emit(int fd, int type, int code, int val);
+  void emit(const int fd, const int type, const int code, const int val);
 
-  void push(int code);
-  void release(int code);
-  void pushRelease(int code);
+  void push(const int code);
+  void release(const int code);
+  void pushRelease(const int code);
   void refresh();
 
   void init();
@@ -35,7 +44,9 @@ public:
   Keyboard();
   ~Keyboard();
 
-  void enie();
+  void enie(const int rollback, const vector<int> *keys);
+  bool transform(const vector<key> transformKeys, input_event *event,
+                 stack<input_event> keys_buf);
 
   void close_device();
 };

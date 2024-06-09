@@ -11,14 +11,25 @@ private:
   struct input_event *input_data;
   const int input_size = sizeof(struct input_event);
 
+  const vector<key> keys = {
+      {{KEY_O, KEY_I, KEY_N}, 1},
+      {{KEY_A, KEY_I, KEY_N}, 1},
+      {{KEY_E, KEY_I, KEY_N}, 1},
+      {{KEY_ESC, KEY_SEMICOLON, KEY_SEMICOLON}, 0},
+  };
+
+  Keyboard keyboard;
+  stack<input_event> last_keys;
+
   void init();
   void open_device();
+  void verify(input_event *event);
 
 public:
   DeviceHandler(char *input_dev);
   ~DeviceHandler();
 
-  void loop(void (*v)(int, int));
+  void loop();
 
   void close_device();
 };

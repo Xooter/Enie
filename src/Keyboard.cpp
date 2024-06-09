@@ -1,23 +1,53 @@
 #include "Keyboard.hpp"
+#include <iostream>
+#include <thread>
 
 Keyboard::Keyboard() { init(); }
 Keyboard::~Keyboard() { close_device(); }
 
-void Keyboard::emit(int fd, int type, int code, int val) {
+void Keyboard::emit(const int fd, const int type, const int code,
+                    const int val) {
   struct input_event ie;
 
   ie.type = type;
   ie.code = code;
   ie.value = val;
-  /* timestamp values below are ignored */
+
   ie.time.tv_sec = 0;
   ie.time.tv_usec = 0;
 
   write(fd, &ie, sizeof(ie));
 }
 
-void Keyboard::enie() {
-  pushRelease(KEY_BACKSPACE);
+bool Keyboard::transform(const vector<key> transformKeys, input_event *event,
+                         stack<input_event> keys_buf) {
+  for (int i = 0; i < transformKeys.size(); i++) {
+    bool match = true;
+    for (int j = 0; j < transformKeys[i].keys.size(); j++) {
+
+      int key = transformKeys[i].keys[j];
+
+      if (keys_buf.empty() || keys_buf.top().code != key) {
+        match = false;
+        break;
+      }
+
+      if (keys_buf.size() > 1)
+        keys_buf.pop();
+    }
+
+    if (match) {
+      enie(transformKeys[i].rollback, &transformKeys[i].keys);
+      return true;
+    }
+  }
+  return false;
+}
+
+void Keyboard::enie(const int rollback, const vector<int> *keys) {
+  for (int i = 0; i < keys->size(); i++) {
+    pushRelease(KEY_BACKSPACE);
+  }
 
   push(KEY_LEFTCTRL);
   push(KEY_LEFTSHIFT);
@@ -32,16 +62,24 @@ void Keyboard::enie() {
   pushRelease(KEY_1);
   pushRelease(KEY_ENTER);
 
+  this_thread::sleep_for(chrono::milliseconds(100));
+
+  for (int i = 0; i < rollback; i++) {
+    pushRelease(keys->at(i));
+  }
+
   refresh();
 }
 
-void Keyboard::push(int code) { emit(fd, EV_KEY, code, 1); }
+void Keyboard::push(const int code) { emit(fd, EV_KEY, code, 1); }
 
-void Keyboard::release(int code) { emit(fd, EV_KEY, code, 0); }
+void Keyboard::release(const int code) { emit(fd, EV_KEY, code, 0); }
 
-void Keyboard::pushRelease(int code) {
+void Keyboard::pushRelease(const int code) {
   push(code);
+  refresh();
   release(code);
+  refresh();
 }
 
 void Keyboard::refresh() { emit(fd, EV_SYN, SYN_REPORT, 0); }
@@ -53,6 +91,10 @@ void Keyboard::init() {
    * The ioctls below will enable the device that is about to be
    * created, to pass key events, in this case the space key.
    */
+  ioctl(fd, UI_SET_KEYBIT, KEY_A);
+  ioctl(fd, UI_SET_KEYBIT, KEY_E);
+  ioctl(fd, UI_SET_KEYBIT, KEY_O);
+
   ioctl(fd, UI_SET_EVBIT, EV_KEY);
   ioctl(fd, UI_SET_KEYBIT, KEY_U);
   ioctl(fd, UI_SET_KEYBIT, KEY_F);
