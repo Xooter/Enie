@@ -12,11 +12,12 @@ private:
   const int input_size = sizeof(struct input_event);
 
   const vector<key> keys = {
-      {{KEY_O, KEY_I, KEY_N}, 1},
-      {{KEY_A, KEY_I, KEY_N}, 1},
-      {{KEY_E, KEY_I, KEY_N}, 1},
       {{KEY_ESC, KEY_SEMICOLON, KEY_SEMICOLON}, 0},
   };
+
+  // {{KEY_O, KEY_I, KEY_N}, 1}, // incomodo
+  // {{KEY_A, KEY_I, KEY_N}, 1}, // incomodo
+  // {{KEY_E, KEY_I, KEY_N}, 1}, // incomodo
 
   Keyboard keyboard;
   stack<input_event> last_keys;

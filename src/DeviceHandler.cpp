@@ -70,9 +70,9 @@ void DeviceHandler::init() {
 
 void DeviceHandler::open_device() {
   fds[0].fd = open(input_dev, O_RDONLY | O_NONBLOCK);
-  if (fds[0].fd < 0) {
-    throw std::runtime_error("Error unable open for reading device\n");
-  }
+  // if (fds[0].fd < 0) {
+  //   throw std::runtime_error("Error unable open for reading device\n");
+  // }
 }
 
 void DeviceHandler::close_device() {
