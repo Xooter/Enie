@@ -12,7 +12,7 @@ private:
   const int input_size = sizeof(struct input_event);
 
   const vector<key> keys = {
-      {{KEY_ESC, KEY_SEMICOLON, KEY_SEMICOLON}, 0},
+      {{KEY_SEMICOLON, KEY_SEMICOLON, KEY_SEMICOLON}, 0},
   };
 
   // {{KEY_O, KEY_I, KEY_N}, 1}, // incomodo

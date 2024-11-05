@@ -45,7 +45,7 @@ bool Keyboard::transform(const vector<key> &transformKeys, input_event *event,
 }
 
 void Keyboard::enie(const int rollback, const vector<int> *keys) {
-  for (int i = 0; i < keys->size() + rollback - 1; i++) {
+  for (int i = 0; i < keys->size() + rollback; i++) {
     pushRelease(KEY_BACKSPACE);
   }
 
