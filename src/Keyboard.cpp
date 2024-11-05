@@ -1,4 +1,6 @@
 #include "Keyboard.hpp"
+#include <string.h>
+#include <thread>
 
 Keyboard::Keyboard() { init(); }
 Keyboard::~Keyboard() { close_device(); }
@@ -17,25 +19,25 @@ void Keyboard::emit(const int fd, const int type, const int code,
   write(fd, &ie, sizeof(ie));
 }
 
-bool Keyboard::transform(const vector<key> transformKeys, input_event *event,
+bool Keyboard::transform(const vector<key> &transformKeys, input_event *event,
                          stack<input_event> keys_buf) {
-  for (int i = 0; i < transformKeys.size(); i++) {
+  for (const auto &transformKey : transformKeys) {
     bool match = true;
-    for (int j = 0; j < transformKeys[i].keys.size(); j++) {
+    auto keys_buf_copy = keys_buf;
 
-      int key = transformKeys[i].keys[j];
+    for (int j = 0; j < transformKey.keys.size(); ++j) {
+      int key = transformKey.keys[j];
 
-      if (keys_buf.empty() || keys_buf.top().code != key) {
+      if (keys_buf_copy.empty() || keys_buf_copy.top().code != key) {
         match = false;
         break;
       }
 
-      if (keys_buf.size() > 1)
-        keys_buf.pop();
+      keys_buf_copy.pop();
     }
 
     if (match) {
-      enie(transformKeys[i].rollback, &transformKeys[i].keys);
+      enie(transformKey.rollback, &transformKey.keys);
       return true;
     }
   }
@@ -43,7 +45,7 @@ bool Keyboard::transform(const vector<key> transformKeys, input_event *event,
 }
 
 void Keyboard::enie(const int rollback, const vector<int> *keys) {
-  for (const auto &key : *keys) {
+  for (int i = 0; i < keys->size() + rollback - 1; i++) {
     pushRelease(KEY_BACKSPACE);
   }
 
@@ -60,11 +62,7 @@ void Keyboard::enie(const int rollback, const vector<int> *keys) {
   pushRelease(KEY_1);
   pushRelease(KEY_ENTER);
 
-  this_thread::sleep_for(chrono::milliseconds(100));
-
-  for (const auto &key : *keys) {
-    pushRelease(key);
-  }
+  this_thread::sleep_for(chrono::milliseconds(200));
 
   refresh();
 }

@@ -1,4 +1,7 @@
 #include "DeviceHandler.hpp"
+#include <stdexcept>
+#include <stdio.h>
+#include <string.h>
 
 DeviceHandler::DeviceHandler(char *input_dev) {
   this->input_dev = input_dev;
@@ -28,7 +31,6 @@ void DeviceHandler::loop() {
 }
 
 // ["nie",";;"] => "<uni>00f1"
-//
 void DeviceHandler::verify(input_event *event) {
 
   if (event->value != 1 || event->type != EV_KEY)
@@ -70,9 +72,9 @@ void DeviceHandler::init() {
 
 void DeviceHandler::open_device() {
   fds[0].fd = open(input_dev, O_RDONLY | O_NONBLOCK);
-  // if (fds[0].fd < 0) {
-  //   throw std::runtime_error("Error unable open for reading device\n");
-  // }
+  if (fds[0].fd < 0) {
+    throw std::runtime_error("Error unable open for reading device\n");
+  }
 }
 
 void DeviceHandler::close_device() {

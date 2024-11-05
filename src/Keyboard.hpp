@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <fcntl.h>
 #include <limits.h>
 #include <linux/input-event-codes.h>
@@ -8,13 +9,9 @@
 #include <poll.h>
 #include <stack>
 #include <stdbool.h>
-#include <stdexcept>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
 #include <termios.h>
-#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -46,7 +43,7 @@ public:
   ~Keyboard();
 
   void enie(const int rollback, const vector<int> *keys);
-  bool transform(const vector<key> transformKeys, input_event *event,
+  bool transform(const vector<key> &transformKeys, input_event *event,
                  stack<input_event> keys_buf);
 
   void close_device();
